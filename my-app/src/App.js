@@ -3,6 +3,8 @@ import logo from './logo.svg';
 import './App.css';
 import styled from "styled-components";
 import Blur from 'react-blur';
+import Slider from "rc-slider";
+import "rc-slider/assets/index.css";
 
 const CenterContainer = styled.div`
   flex: 1;
@@ -27,37 +29,61 @@ const ListElement = styled.li`
   color: ${props => props.selected == props.value ? "blue" : "black"};
 `;
 
+const ConfirmButton = styled.div`
+  margin-top: 50px;
+  margin-bottom: 50px;
+`;
+
+const SliderWidth = styled.div`
+  width: 30%;
+`;
+
 
 const ImageContainer = styled.div`
   overflow: hidden;
   height: 500px;
   width: 500px;
+  flex: 1;
+  flex-direction: row;
 `
 class App extends Component {
-  NUMIMAGESTEST = 10;
+  NUMIMAGESTEST = 3;
   imageBrowserNumber = this.NUMIMAGESTEST;
   clicks = 1;
   imageValue = "https://images.pexels.com/photos/20787/pexels-photo.jpg?auto=compress&cs=tinysrgb&h=350";
   result = []
+  valueSelected = 50;
+  recorded = false;
   state = {
     selected: 50
   }
 
   changeSelected = (value) => {
     if (this.clicks == 1){
+      console.log(value);
       this.setState({selected: value});
       this.clicks -= 1;
       this.imageBrowserNumber -= 1;
       this.result.push({
         "ImageID": this.imageValue,
-        "ImageBlur": this.state.selected
+        "ImageBlur": value
       });
+      this.forceUpdate();
     }
   }
 
+onSliderChange = (value) => {
+  this.setState({
+    value,
+  });
+  this.forceUpdate();
+}
+
   next = () => {
-    this.setState({selected: 50});
+    this.setState({value: 50, selected: 50});
     this.clicks = 1;
+    this.recorded = false;
+    this.forceUpdate();
     //this.imageValue = newValue;
   }
 
@@ -66,35 +92,37 @@ class App extends Component {
           <CenterContainer>
       {this.imageBrowserNumber == 0 ?
         <div className="App">
+            <h3>{this.NUMIMAGESTEST} Images Viewed</h3>
             {this.result.map((test)=> (
-                <ol>
+                <List>
                   <li>
-                    <p>{test.ImageID}</p>
-                    <h5>{test.ImageBlur}</h5>
+                    <hr />
+                    <img width={100} height={100} src={test.ImageID} />
+                    <h5>Blur Value: {test.ImageBlur}</h5>
+                    <hr />
                   </li>
-                </ol>
+                </List>
               ))
             }
-            <button onClick={() => this.imageBrowserNumber = this.NUMIMAGESTEST}>Reset Test</button>
         </div>
         :
         <CenterContainer>
             <ImageContainer>
               <Image src={this.imageValue} blurValue={this.state.selected} />
             </ImageContainer>
-            <List>
-              <ListElement value={0} selected={this.state.selected} onClick={() => this.changeSelected(0)}>No Blur</ListElement>
-              <ListElement value={10} selected={this.state.selected} onClick={() => this.changeSelected(10)}>10% Blur</ListElement>
-              <ListElement value={20} selected={this.state.selected} onClick={() => this.changeSelected(20)}>20% Blur</ListElement>
-              <ListElement value={30} selected={this.state.selected} onClick={() => this.changeSelected(30)}>30% Blur</ListElement>
-              <ListElement value={40} selected={this.state.selected} onClick={() => this.changeSelected(40)}>40% Blur</ListElement>
-              <ListElement value={50} selected={this.state.selected} onClick={() => this.changeSelected(50)}>50% Blur</ListElement>
-              <ListElement value={60} selected={this.state.selected} onClick={() => this.changeSelected(60)}>60% Blur</ListElement>
-              <ListElement value={70} selected={this.state.selected} onClick={() => this.changeSelected(70)}>70% Blur</ListElement>
-              <ListElement value={80} selected={this.state.selected} onClick={() => this.changeSelected(80)}>80% Blur</ListElement>
-              <ListElement value={90} selected={this.state.selected} onClick={() => this.changeSelected(90)}>90% Blur</ListElement>
-              <ListElement value={100} selected={this.state.selected} onClick={() => this.changeSelected(100)}>100% Blur</ListElement>
-            </List>
+            <SliderWidth>
+              <Slider step={10} dots={true} defaultValue={50} value={this.state.value} onChange={this.onSliderChange} onAfterChange={this.onSliderChange}/>
+            </SliderWidth>
+            <ConfirmButton>
+              <button onClick={() => {
+                if (this.recorded == false) {
+                  this.recorded = true;
+                  this.valueSelected = this.state.value;
+                  this.changeSelected(this.valueSelected);
+                }
+              }}>Confirm</button>
+              <p>{this.recorded ? "Response recorded, click Next" : "Please Select a Value"}</p>
+            </ConfirmButton>
             <button onClick={() => this.next()}>Next Image</button>
           </CenterContainer>
       }
