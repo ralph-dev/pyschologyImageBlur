@@ -7,11 +7,12 @@ import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 
 const CenterContainer = styled.div`
-  flex: 1;
-  flex-direction: row;
+  display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  align-content: center;
+  text-align: center;
+  min-height: 100vh;
 `;
 
 const Image = styled.img`
