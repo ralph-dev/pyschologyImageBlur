@@ -48,6 +48,10 @@ const ImageContainer = styled.div`
   flex-direction: row;
 `
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.switchTimer = setInterval(this.next,5000);
+  }
   NUMIMAGESTEST = 3;
   imageBrowserNumber = this.NUMIMAGESTEST;
   clicks = 1;
@@ -64,7 +68,7 @@ class App extends Component {
       console.log(value);
       this.setState({selected: value});
       this.clicks -= 1;
-      this.imageBrowserNumber -= 1;
+
       this.result.push({
         "ImageID": this.imageValue,
         "ImageBlur": value
@@ -81,6 +85,16 @@ onSliderChange = (value) => {
 }
 
   next = () => {
+    if (this.recorded == false) {
+      this.recorded = true;
+      this.valueSelected = this.state.value;
+      this.changeSelected(this.valueSelected);
+    }
+    this.imageBrowserNumber -= 1;
+    console.log(this.switchTimer);
+    if (this.imageBrowserNumber <= 0) {
+      clearInterval(this.switchTimer);
+    }
     this.setState({value: 50, selected: 50});
     this.clicks = 1;
     this.recorded = false;
